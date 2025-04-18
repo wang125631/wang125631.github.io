@@ -140,13 +140,25 @@
       
 
 
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">分类</h3>
+      <div class="category-box">
+            <a class="category-link" href="/categories/%E7%AE%97%E6%B3%95/">
+                算法
+                <div class="category-count">1</div>
+            </a>
+        </div>
+    </div>
+  </div>
+
 
     
       
   <div class="widget-wrap">
     <div class="widget">
       <h3 class="widget-title">标签</h3>
-      <ul class="widget-tag-list" itemprop="keywords"><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
+      <ul class="widget-tag-list" itemprop="keywords"><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" rel="tag">动态规划</a></li></ul>
     </div>
   </div>
 
@@ -184,7 +196,7 @@
           <div class="need-seperator meta-info">
             <div class="meta-cate-flex">
   
-    未分类 
+  <a class="meta-cate-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
    
 </div>
   
@@ -194,7 +206,7 @@
           </div>
         </div>
         
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" rel="tag">动态规划</a></li></ul>
 
       </header>
       <div class="e-content article-entry" itemprop="articleBody">
@@ -214,7 +226,7 @@ dp[i] 表示前 i 间房屋最多能偷窃的金额。
 
 偷第 i 间房：dp[i-2] + nums[i]
 不偷第 i 间房：dp[i-1]
-所以： dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])
+所以：dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])
 
 初始条件：
 
@@ -222,7 +234,7 @@ dp[0] = nums[0]
 dp[1] = max(nums[0], nums[1])
 
 
-✅ Java 示例代码：1234567891011121314151617java复制编辑public class Solution &#123;    public int rob(int[] nums) &#123;     ...
+✅ Java 示例代码：1234567891011121314151617java复制编辑public class Solution &#123;    public int rob(int[] nums) &#123;      ...
             
           </div>
         
