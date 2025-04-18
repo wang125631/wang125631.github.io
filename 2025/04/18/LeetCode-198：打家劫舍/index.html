@@ -20,15 +20,15 @@
   <link rel="preload" href="/css/fonts/Roboto-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
   <link rel="preload" href="/css/fonts/Roboto-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
 
-  <meta name="description" content="LeetCode 198 题「打家劫舍」（House Robber）是一道经典的动态规划问题，题意如下：  🧾 题目描述：你是一个专业的小偷，计划偷窃沿街的一排房屋。每间房内都有一定的现金，如果 两间相邻的房屋在同一晚上被偷 ，会触发报警系统。 给定一个非负整数数组 nums，表示每间房屋存放的现金，求在不触动报警系统的情况下 一夜之内最多可以偷窃的金额 。  🧠 解题思路（动态规划）：定义状">
+  <meta name="description" content="LeetCode 198 题「打家劫舍」（House Robber）是一道经典的动态规划问题，题意如下：  🧾 题目描述：你是一个专业的小偷，计划偷窃沿街的一排房屋。每间房内都有一定的现金，如果两间相邻的房屋在同一晚上被偷，会触发报警系统。 给定一个非负整数数组 nums，表示每间房屋存放的现金，求在不触动报警系统的情况下一夜之内最多可以偷窃的金额。  🧠 解题思路（动态规划）：定义状态：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LeetCode 198：打家劫舍">
 <meta property="og:url" content="https://wang125631.github.io/2025/04/18/LeetCode-198%EF%BC%9A%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/index.html">
 <meta property="og:site_name" content="记事本">
-<meta property="og:description" content="LeetCode 198 题「打家劫舍」（House Robber）是一道经典的动态规划问题，题意如下：  🧾 题目描述：你是一个专业的小偷，计划偷窃沿街的一排房屋。每间房内都有一定的现金，如果 两间相邻的房屋在同一晚上被偷 ，会触发报警系统。 给定一个非负整数数组 nums，表示每间房屋存放的现金，求在不触动报警系统的情况下 一夜之内最多可以偷窃的金额 。  🧠 解题思路（动态规划）：定义状">
+<meta property="og:description" content="LeetCode 198 题「打家劫舍」（House Robber）是一道经典的动态规划问题，题意如下：  🧾 题目描述：你是一个专业的小偷，计划偷窃沿街的一排房屋。每间房内都有一定的现金，如果两间相邻的房屋在同一晚上被偷，会触发报警系统。 给定一个非负整数数组 nums，表示每间房屋存放的现金，求在不触动报警系统的情况下一夜之内最多可以偷窃的金额。  🧠 解题思路（动态规划）：定义状态：">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-04-18T07:33:42.000Z">
-<meta property="article:modified_time" content="2025-04-18T07:34:35.638Z">
+<meta property="article:modified_time" content="2025-04-18T07:36:42.294Z">
 <meta property="article:author" content="王鹏霄">
 <meta property="article:tag" content="算法">
 <meta name="twitter:card" content="summary">
@@ -196,7 +196,7 @@
   
           </div>
           <div class="wordcount need-seperator meta-info">
-            933 词 
+            983 词 
           </div>
         </div>
         
@@ -207,8 +207,8 @@
         
           <p>LeetCode 198 题「打家劫舍」（House Robber）是一道经典的<strong>动态规划</strong>问题，题意如下：</p>
 <hr>
-<h3 id="🧾-题目描述："><a href="#🧾-题目描述：" class="headerlink" title="🧾 题目描述："></a>🧾 题目描述：</h3><p>你是一个专业的小偷，计划偷窃沿街的一排房屋。每间房内都有一定的现金，如果 <strong>两间相邻的房屋在同一晚上被偷</strong> ，会触发报警系统。</p>
-<p>给定一个非负整数数组 <code>nums</code>，表示每间房屋存放的现金，求在不触动报警系统的情况下 <strong>一夜之内最多可以偷窃的金额</strong> 。</p>
+<h3 id="🧾-题目描述："><a href="#🧾-题目描述：" class="headerlink" title="🧾 题目描述："></a>🧾 题目描述：</h3><p>你是一个专业的小偷，计划偷窃沿街的一排房屋。每间房内都有一定的现金，如果<strong>两间相邻的房屋在同一晚上被偷</strong>，会触发报警系统。</p>
+<p>给定一个非负整数数组 <code>nums</code>，表示每间房屋存放的现金，求在不触动报警系统的情况下<strong>一夜之内最多可以偷窃的金额</strong>。</p>
 <hr>
 <h3 id="🧠-解题思路（动态规划）："><a href="#🧠-解题思路（动态规划）：" class="headerlink" title="🧠 解题思路（动态规划）："></a>🧠 解题思路（动态规划）：</h3><p>定义状态：</p>
 <ul>
@@ -216,13 +216,9 @@
 </ul>
 <p>状态转移方程：</p>
 <ul>
-<li><p><strong>偷第 i 间房</strong> ：<code>dp[i-2] + nums[i]</code></p>
-</li>
-<li><p><strong>不偷第 i 间房</strong> ：<code>dp[i-1]</code></p>
-</li>
-<li><p>所以：</p>
-<p><code>dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])</code></p>
-</li>
+<li><strong>偷第 i 间房</strong>：<code>dp[i-2] + nums[i]</code></li>
+<li><strong>不偷第 i 间房</strong>：<code>dp[i-1]</code></li>
+<li>所以：<br> <code>dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])</code></li>
 </ul>
 <p>初始条件：</p>
 <ul>
@@ -230,49 +226,13 @@
 <li><code>dp[1] = max(nums[0], nums[1])</code></li>
 </ul>
 <hr>
-<h3 id="✅-Java-示例代码："><a href="#✅-Java-示例代码：" class="headerlink" title="✅ Java 示例代码："></a>✅ Java 示例代码：</h3><pre class="overflow-visible!" data-start="480" data-end="890"><div class="contain-inline-size rounded-md border-[0.5px] border-token-border-medium relative bg-token-sidebar-surface-primary"><div class="flex items-center text-token-text-secondary px-4 py-2 text-xs font-sans justify-between h-9 bg-token-sidebar-surface-primary dark:bg-token-main-surface-secondary select-none rounded-t-[5px]">java</div><div class="sticky top-9"><div class="absolute end-0 bottom-0 flex h-9 items-center pe-2"><div class="bg-token-sidebar-surface-primary text-token-text-secondary dark:bg-token-main-surface-secondary flex items-center rounded-sm px-2 font-sans text-xs"><span class="" data-state="closed"><button class="flex gap-1 items-center select-none px-4 py-1" aria-label="复制"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-xs"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7 3.34315 8.34315 2 10 2H19C20.6569 2 22 3.34315 22 5V14C22 15.6569 20.6569 17 19 17H17V19C17 20.6569 15.6569 22 14 22H5C3.34315 22 2 20.6569 2 19V10C2 8.34315 3.34315 7 5 7H7V5ZM9 7H14C15.6569 7 17 8.34315 17 10V15H19C19.5523 15 20 14.5523 20 14V5C20 4.44772 19.5523 4 19 4H10C9.44772 4 9 4.44772 9 5V7ZM5 9C4.44772 9 4 9.44772 4 10V19C4 19.5523 4.44772 20 5 20H14C14.5523 20 15 19.5523 15 19V10C15 9.44772 14.5523 9 14 9H5Z" fill="currentColor"></path></svg>复制</button></span><span class="" data-state="closed"><button class="flex items-center gap-1 px-4 py-1 select-none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-xs"><path d="M2.5 5.5C4.3 5.2 5.2 4 5.5 2.5C5.8 4 6.7 5.2 8.5 5.5C6.7 5.8 5.8 7 5.5 8.5C5.2 7 4.3 5.8 2.5 5.5Z" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5.66282 16.5231L5.18413 19.3952C5.12203 19.7678 5.09098 19.9541 5.14876 20.0888C5.19933 20.2067 5.29328 20.3007 5.41118 20.3512C5.54589 20.409 5.73218 20.378 6.10476 20.3159L8.97693 19.8372C9.72813 19.712 10.1037 19.6494 10.4542 19.521C10.7652 19.407 11.0608 19.2549 11.3343 19.068C11.6425 18.8575 11.9118 18.5882 12.4503 18.0497L20 10.5C21.3807 9.11929 21.3807 6.88071 20 5.5C18.6193 4.11929 16.3807 4.11929 15 5.5L7.45026 13.0497C6.91175 13.5882 6.6425 13.8575 6.43197 14.1657C6.24513 14.4392 6.09299 14.7348 5.97903 15.0458C5.85062 15.3963 5.78802 15.7719 5.66282 16.5231Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14.5 7L18.5 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>编辑</button></span></div></div></div><div class="overflow-y-auto p-4" dir="ltr"><code class="whitespace-pre! language-java"><span><span>public</span><span></span><span>class</span><span></span><span>Solution</span><span> &#123;
-    </span><span>public</span><span></span><span>int</span><span></span><span>rob</span><span>(int</span><span>[] nums) &#123;
-        </span><span>int</span><span></span><span>n</span><span></span><span>=</span><span> nums.length;
-        </span><span>if</span><span> (n == </span><span>0</span><span>) </span><span>return</span><span></span><span>0</span><span>;
-        </span><span>if</span><span> (n == </span><span>1</span><span>) </span><span>return</span><span> nums[</span><span>0</span><span>];
-
-        </span><span>int</span><span>[] dp = </span><span>new</span><span></span><span>int</span><span>[n];
-        dp[</span><span>0</span><span>] = nums[</span><span>0</span><span>];
-        dp[</span><span>1</span><span>] = Math.max(nums[</span><span>0</span><span>], nums[</span><span>1</span><span>]);
-
-        </span><span>for</span><span> (</span><span>int</span><span></span><span>i</span><span></span><span>=</span><span></span><span>2</span><span>; i < n; i++) &#123;
-            dp[i] = Math.max(dp[i - </span><span>1</span><span>], dp[i - </span><span>2</span><span>] + nums[i]);
-        &#125;
-
-        </span><span>return</span><span> dp[n - </span><span>1</span><span>];
-    &#125;
-&#125;
-</span></span></code></div></div></pre>
+<h3 id="✅-Java-示例代码："><a href="#✅-Java-示例代码：" class="headerlink" title="✅ Java 示例代码："></a>✅ Java 示例代码：</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">java复制编辑public class Solution &#123;</span><br><span class="line">    public int rob(int[] nums) &#123;</span><br><span class="line">        int n = nums.length;</span><br><span class="line">        if (n == 0) return 0;</span><br><span class="line">        if (n == 1) return nums[0];</span><br><span class="line"></span><br><span class="line">        int[] dp = new int[n];</span><br><span class="line">        dp[0] = nums[0];</span><br><span class="line">        dp[1] = Math.max(nums[0], nums[1]);</span><br><span class="line"></span><br><span class="line">        for (int i = 2; i &lt; n; i++) &#123;</span><br><span class="line">            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return dp[n - 1];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h3 id="🚀-空间优化版（滚动数组）："><a href="#🚀-空间优化版（滚动数组）：" class="headerlink" title="🚀 空间优化版（滚动数组）："></a>🚀 空间优化版（滚动数组）：</h3><pre class="overflow-visible!" data-start="918" data-end="1189"><div class="contain-inline-size rounded-md border-[0.5px] border-token-border-medium relative bg-token-sidebar-surface-primary"><div class="flex items-center text-token-text-secondary px-4 py-2 text-xs font-sans justify-between h-9 bg-token-sidebar-surface-primary dark:bg-token-main-surface-secondary select-none rounded-t-[5px]">java</div><div class="sticky top-9"><div class="absolute end-0 bottom-0 flex h-9 items-center pe-2"><div class="bg-token-sidebar-surface-primary text-token-text-secondary dark:bg-token-main-surface-secondary flex items-center rounded-sm px-2 font-sans text-xs"><span class="" data-state="closed"><button class="flex gap-1 items-center select-none px-4 py-1" aria-label="复制"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-xs"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7 3.34315 8.34315 2 10 2H19C20.6569 2 22 3.34315 22 5V14C22 15.6569 20.6569 17 19 17H17V19C17 20.6569 15.6569 22 14 22H5C3.34315 22 2 20.6569 2 19V10C2 8.34315 3.34315 7 5 7H7V5ZM9 7H14C15.6569 7 17 8.34315 17 10V15H19C19.5523 15 20 14.5523 20 14V5C20 4.44772 19.5523 4 19 4H10C9.44772 4 9 4.44772 9 5V7ZM5 9C4.44772 9 4 9.44772 4 10V19C4 19.5523 4.44772 20 5 20H14C14.5523 20 15 19.5523 15 19V10C15 9.44772 14.5523 9 14 9H5Z" fill="currentColor"></path></svg>复制</button></span><span class="" data-state="closed"><button class="flex items-center gap-1 px-4 py-1 select-none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-xs"><path d="M2.5 5.5C4.3 5.2 5.2 4 5.5 2.5C5.8 4 6.7 5.2 8.5 5.5C6.7 5.8 5.8 7 5.5 8.5C5.2 7 4.3 5.8 2.5 5.5Z" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5.66282 16.5231L5.18413 19.3952C5.12203 19.7678 5.09098 19.9541 5.14876 20.0888C5.19933 20.2067 5.29328 20.3007 5.41118 20.3512C5.54589 20.409 5.73218 20.378 6.10476 20.3159L8.97693 19.8372C9.72813 19.712 10.1037 19.6494 10.4542 19.521C10.7652 19.407 11.0608 19.2549 11.3343 19.068C11.6425 18.8575 11.9118 18.5882 12.4503 18.0497L20 10.5C21.3807 9.11929 21.3807 6.88071 20 5.5C18.6193 4.11929 16.3807 4.11929 15 5.5L7.45026 13.0497C6.91175 13.5882 6.6425 13.8575 6.43197 14.1657C6.24513 14.4392 6.09299 14.7348 5.97903 15.0458C5.85062 15.3963 5.78802 15.7719 5.66282 16.5231Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14.5 7L18.5 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>编辑</button></span></div></div></div><div class="overflow-y-auto p-4" dir="ltr"><code class="whitespace-pre! language-java"><span><span>public</span><span></span><span>class</span><span></span><span>Solution</span><span> &#123;
-    </span><span>public</span><span></span><span>int</span><span></span><span>rob</span><span>(int</span><span>[] nums) &#123;
-        </span><span>int</span><span></span><span>prev</span><span></span><span>=</span><span></span><span>0</span><span>, curr = </span><span>0</span><span>;
-        </span><span>for</span><span> (</span><span>int</span><span> num : nums) &#123;
-            </span><span>int</span><span></span><span>temp</span><span></span><span>=</span><span> Math.max(curr, prev + num);
-            prev = curr;
-            curr = temp;
-        &#125;
-        </span><span>return</span><span> curr;
-    &#125;
-&#125;
-</span></span></code></div></div></pre>
+<h3 id="🚀-空间优化版（滚动数组）："><a href="#🚀-空间优化版（滚动数组）：" class="headerlink" title="🚀 空间优化版（滚动数组）："></a>🚀 空间优化版（滚动数组）：</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">java复制编辑public class Solution &#123;</span><br><span class="line">    public int rob(int[] nums) &#123;</span><br><span class="line">        int prev = 0, curr = 0;</span><br><span class="line">        for (int num : nums) &#123;</span><br><span class="line">            int temp = Math.max(curr, prev + num);</span><br><span class="line">            prev = curr;</span><br><span class="line">            curr = temp;</span><br><span class="line">        &#125;</span><br><span class="line">        return curr;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h3 id="🧪-示例："><a href="#🧪-示例：" class="headerlink" title="🧪 示例："></a>🧪 示例：</h3><pre class="overflow-visible!" data-start="1207" data-end="1356"><div class="contain-inline-size rounded-md border-[0.5px] border-token-border-medium relative bg-token-sidebar-surface-primary"><div class="flex items-center text-token-text-secondary px-4 py-2 text-xs font-sans justify-between h-9 bg-token-sidebar-surface-primary dark:bg-token-main-surface-secondary select-none rounded-t-[5px]">text</div><div class="sticky top-9"><div class="absolute end-0 bottom-0 flex h-9 items-center pe-2"><div class="bg-token-sidebar-surface-primary text-token-text-secondary dark:bg-token-main-surface-secondary flex items-center rounded-sm px-2 font-sans text-xs"><span class="" data-state="closed"><button class="flex gap-1 items-center select-none px-4 py-1" aria-label="复制"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-xs"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7 3.34315 8.34315 2 10 2H19C20.6569 2 22 3.34315 22 5V14C22 15.6569 20.6569 17 19 17H17V19C17 20.6569 15.6569 22 14 22H5C3.34315 22 2 20.6569 2 19V10C2 8.34315 3.34315 7 5 7H7V5ZM9 7H14C15.6569 7 17 8.34315 17 10V15H19C19.5523 15 20 14.5523 20 14V5C20 4.44772 19.5523 4 19 4H10C9.44772 4 9 4.44772 9 5V7ZM5 9C4.44772 9 4 9.44772 4 10V19C4 19.5523 4.44772 20 5 20H14C14.5523 20 15 19.5523 15 19V10C15 9.44772 14.5523 9 14 9H5Z" fill="currentColor"></path></svg>复制</button></span><span class="" data-state="closed"><button class="flex items-center gap-1 px-4 py-1 select-none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-xs"><path d="M2.5 5.5C4.3 5.2 5.2 4 5.5 2.5C5.8 4 6.7 5.2 8.5 5.5C6.7 5.8 5.8 7 5.5 8.5C5.2 7 4.3 5.8 2.5 5.5Z" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5.66282 16.5231L5.18413 19.3952C5.12203 19.7678 5.09098 19.9541 5.14876 20.0888C5.19933 20.2067 5.29328 20.3007 5.41118 20.3512C5.54589 20.409 5.73218 20.378 6.10476 20.3159L8.97693 19.8372C9.72813 19.712 10.1037 19.6494 10.4542 19.521C10.7652 19.407 11.0608 19.2549 11.3343 19.068C11.6425 18.8575 11.9118 18.5882 12.4503 18.0497L20 10.5C21.3807 9.11929 21.3807 6.88071 20 5.5C18.6193 4.11929 16.3807 4.11929 15 5.5L7.45026 13.0497C6.91175 13.5882 6.6425 13.8575 6.43197 14.1657C6.24513 14.4392 6.09299 14.7348 5.97903 15.0458C5.85062 15.3963 5.78802 15.7719 5.66282 16.5231Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14.5 7L18.5 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>编辑</button></span></div></div></div><div class="overflow-y-auto p-4" dir="ltr"><code class="whitespace-pre! language-text"><span><span>输入: [2,7,9,3,1]
-过程:
-dp[0] = 2
-dp[1] = max(2, 7) = 7
-dp[2] = max(7, 2+9) = 11
-dp[3] = max(11, 7+3) = 11
-dp[4] = max(11, 11+1) = 12
-
-输出: 12</span></span></code></div></div></pre>
+<h3 id="🧪-示例："><a href="#🧪-示例：" class="headerlink" title="🧪 示例："></a>🧪 示例：</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">text复制编辑输入: [2,7,9,3,1]</span><br><span class="line">过程:</span><br><span class="line">dp[0] = 2</span><br><span class="line">dp[1] = max(2, 7) = 7</span><br><span class="line">dp[2] = max(7, 2+9) = 11</span><br><span class="line">dp[3] = max(11, 7+3) = 11</span><br><span class="line">dp[4] = max(11, 11+1) = 12</span><br><span class="line"></span><br><span class="line">输出: 12</span><br></pre></td></tr></table></figure>
 
         
       </div>

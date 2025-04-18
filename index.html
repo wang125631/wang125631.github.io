@@ -190,7 +190,7 @@
   
           </div>
           <div class="wordcount need-seperator meta-info">
-            933 词 
+            983 词 
           </div>
         </div>
         
@@ -203,8 +203,8 @@
             
               LeetCode 198 题「打家劫舍」（House Robber）是一道经典的动态规划问题，题意如下：
 
-🧾 题目描述：你是一个专业的小偷，计划偷窃沿街的一排房屋。每间房内都有一定的现金，如果 两间相邻的房屋在同一晚上被偷 ，会触发报警系统。
-给定一个非负整数数组 nums，表示每间房屋存放的现金，求在不触动报警系统的情况下 一夜之内最多可以偷窃的金额 。
+🧾 题目描述：你是一个专业的小偷，计划偷窃沿街的一排房屋。每间房内都有一定的现金，如果两间相邻的房屋在同一晚上被偷，会触发报警系统。
+给定一个非负整数数组 nums，表示每间房屋存放的现金，求在不触动报警系统的情况下一夜之内最多可以偷窃的金额。
 
 🧠 解题思路（动态规划）：定义状态：
 
@@ -212,13 +212,9 @@ dp[i] 表示前 i 间房屋最多能偷窃的金额。
 
 状态转移方程：
 
-偷第 i 间房 ：dp[i-2] + nums[i]
-
-不偷第 i 间房 ：dp[i-1]
-
-所以：
-dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])
-
+偷第 i 间房：dp[i-2] + nums[i]
+不偷第 i 间房：dp[i-1]
+所以： dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])
 
 初始条件：
 
@@ -226,9 +222,7 @@ dp[0] = nums[0]
 dp[1] = max(nums[0], nums[1])
 
 
-✅ Java 示例代码：java复制编辑publicclassSolution &#123;
-    publicintrob(int[] nums) &#123;
-        intn= nums.leng...
+✅ Java 示例代码：1234567891011121314151617java复制编辑public class Solution &#123;    public int rob(int[] nums) &#123;     ...
             
           </div>
         
