@@ -1,0 +1,311 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Kafka 4.x | java往事</title><meta name="author" content="王鹏霄"><meta name="copyright" content="王鹏霄"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在 Kafka 4.x 版本中，Kafka 不再支持 ZooKeeper 模式，只支持新的 KRaft 模式。不过为了理解它们的区别，我们可以对比一下 Kafka 4 之前的两种架构：KRaft 模式 vs ZooKeeper 模式，也就是：  🧠 Kafka 使用 KRaft vs 使用 ZooKeeper 的区别一览    对比项 ZooKeeper 模式（Kafka ≤ 3.x） KRaf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka 4.x">
+<meta property="og:url" content="https://wang125631.github.io/2025/04/27/Kafka-4-x/index.html">
+<meta property="og:site_name" content="java往事">
+<meta property="og:description" content="在 Kafka 4.x 版本中，Kafka 不再支持 ZooKeeper 模式，只支持新的 KRaft 模式。不过为了理解它们的区别，我们可以对比一下 Kafka 4 之前的两种架构：KRaft 模式 vs ZooKeeper 模式，也就是：  🧠 Kafka 使用 KRaft vs 使用 ZooKeeper 的区别一览    对比项 ZooKeeper 模式（Kafka ≤ 3.x） KRaf">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wang125631.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2025-04-27T02:00:48.000Z">
+<meta property="article:modified_time" content="2025-04-27T02:24:34.619Z">
+<meta property="article:author" content="王鹏霄">
+<meta property="article:tag" content="Kafka">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wang125631.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Kafka 4.x",
+  "url": "https://wang125631.github.io/2025/04/27/Kafka-4-x/",
+  "image": "https://wang125631.github.io/img/butterfly-icon.png",
+  "datePublished": "2025-04-27T02:00:48.000Z",
+  "dateModified": "2025-04-27T02:24:34.619Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "王鹏霄",
+      "url": "https://wang125631.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wang125631.github.io/2025/04/27/Kafka-4-x/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Kafka 4.x',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">java往事</span></a><a class="nav-page-title" href="/"><span class="site-name">Kafka 4.x</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Kafka 4.x</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-27T02:00:48.000Z" title="发表于 2025-04-27 10:00:48">2025-04-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-27T02:24:34.619Z" title="更新于 2025-04-27 10:24:34">2025-04-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/">中间件</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>在 <strong>Kafka 4.x</strong> 版本中，<strong>Kafka 不再支持 ZooKeeper 模式</strong>，只支持新的 <strong>KRaft 模式</strong>。不过为了理解它们的区别，我们可以对比一下 Kafka 4 之前的两种架构：<strong>KRaft 模式</strong> vs <strong>ZooKeeper 模式</strong>，也就是：</p>
+<hr>
+<h2 id="🧠-Kafka-使用-KRaft-vs-使用-ZooKeeper-的区别一览">🧠 Kafka 使用 KRaft vs 使用 ZooKeeper 的区别一览</h2>
+<table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>ZooKeeper 模式（Kafka ≤ 3.x）</th>
+<th>KRaft 模式（Kafka ≥ 2.8，Kafka 4.x 默认）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>✅ 是否需要 ZooKeeper</td>
+<td><strong>需要</strong></td>
+<td><strong>不需要</strong></td>
+</tr>
+<tr>
+<td>🏗️ 架构组件</td>
+<td>Kafka Broker + ZooKeeper</td>
+<td>Kafka Broker 本身就做元数据管理</td>
+</tr>
+<tr>
+<td>📊 元数据管理</td>
+<td>存储在 ZooKeeper 中（集群元数据、Controller 选举等）</td>
+<td>使用 Kafka 自己的内部元数据日志存储（Raft 协议）</td>
+</tr>
+<tr>
+<td>🧱 控制器选举</td>
+<td>由 ZooKeeper 选出 Controller Broker</td>
+<td>Kafka 内部基于 Raft 自动选主</td>
+</tr>
+<tr>
+<td>📦 集群部署复杂度</td>
+<td>较高，需要维护 ZooKeeper 集群</td>
+<td>更简单，只需要 Kafka Broker 本身</td>
+</tr>
+<tr>
+<td>🧰 Kafka 安装包大小</td>
+<td>较大，附带 ZooKeeper</td>
+<td>更轻量，ZK 相关代码逐步移除</td>
+</tr>
+<tr>
+<td>🔐 安全性</td>
+<td>Kafka 和 ZooKeeper 需要分别配置认证、加密</td>
+<td>Kafka 自己统一管理安全</td>
+</tr>
+<tr>
+<td>🔧 可扩展性</td>
+<td>有 ZooKeeper 限制</td>
+<td>更易扩展，支持更大规模的元数据管理</td>
+</tr>
+<tr>
+<td>🧪 稳定性</td>
+<td>成熟稳定，生产广泛使用</td>
+<td>Kafka 3.4+ 后 KRaft 也达到生产级稳定</td>
+</tr>
+<tr>
+<td>📆 Kafka 4.0 起是否支持</td>
+<td>❌ 不再支持</td>
+<td>✅ 唯一支持的模式</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="📌-什么是-KRaft？">📌 什么是 KRaft？</h2>
+<p>KRaft = <strong>Kafka Raft Metadata Mode</strong><br>
+它把元数据管理放回 Kafka 自身，使用类似 Raft 的协议来替代 ZooKeeper 的角色：</p>
+<ul>
+<li>Kafka 中的部分 Broker 扮演 <code>controller</code> 角色</li>
+<li>使用 <strong>日志复制机制（Raft-like）</strong> 来同步集群元数据</li>
+<li>所有 Broker 启动时根据配置自动协商谁是主控（Controller）</li>
+</ul>
+<hr>
+<h2 id="🚀-Kafka-4-x-以后就只能使用-KRaft！">🚀 Kafka 4.x 以后就只能使用 KRaft！</h2>
+<p>Kafka 官方在 Kafka 4.0 中已经完全 <strong>移除 ZooKeeper 支持</strong>，所以从 Kafka 4.x 开始：</p>
+<ul>
+<li><strong>ZooKeeper 完全退出历史舞台</strong></li>
+<li><strong>只支持 <code>kraft</code> 模式启动</strong></li>
+<li>所有配置都集中在 <code>kraft/server.properties</code></li>
+</ul>
+<hr>
+<h3 id="👀-总结一句话：">👀 总结一句话：</h3>
+<blockquote>
+<p><strong>KRaft 模式是 Kafka 的未来，也是 Kafka 4.x 唯一的运行方式，它让 Kafka 更轻、更快、更好管理。</strong></p>
+</blockquote>
+<hr>
+<h2 id="🚀Kafka-4-x-启动之前需执行一个额外的步骤来格式化日志目录">🚀Kafka 4.x 启动之前需执行一个额外的步骤来格式化日志目录</h2>
+<p>因为 Kafka 引入了 KRaft 模式（移除了对 ZooKeeper 的依赖），并且从 Kafka 4.0 开始，KRaft 是<strong>唯一</strong>支持的模式。</p>
+<p>错误 <code>java.lang.RuntimeException: No readable meta.properties files found.</code> 表明 Kafka 在 KRaft 模式下启动时，无法在其配置的日志目录（<code>log.dirs</code>）中找到必要的元数据文件 <code>meta.properties</code>。这个文件是在<strong>首次</strong>启动 KRaft 集群或节点<strong>之前</strong>，通过<strong>格式化存储</strong>（log directories）来创建的。</p>
+<p>你需要在启动 Kafka 服务器之前执行一个额外的步骤来格式化日志目录。</p>
+<p>下载Kafka 4.x : <a target="_blank" rel="noopener" href="https://dlcdn.apache.org/kafka/4.0.0/kafka-4.0.0-src.tgz">kafka-4.0.0-src.tgz</a></p>
+<p><strong>方案步骤(windows主机为例)：</strong></p>
+<ol>
+<li>
+<p><strong>确认 <code>server.properties</code> 配置:</strong></p>
+<ul>
+<li>打开你的 <code>.\config\server.properties</code> 文件。</li>
+<li>确保以下 KRaft 相关配置是正确的（对于单节点测试，可以这样设置）：
+<ul>
+<li><code>process.roles=broker,controller</code> （或者如果你只想运行一个纯 broker 或纯 controller，请相应设置）</li>
+<li><code>node.id=1</code> （或其他唯一的节点 ID）</li>
+<li><code>log.dirs=C:/tmp/kafka-logs</code> （或者你指定的<strong>实际</strong>日志存储目录，<strong>确保这个目录存在或者 Kafka 有权限创建它</strong>）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>生成集群 ID (Cluster ID):</strong><br>
+KRaft 需要一个唯一的集群 ID。使用 <code>kafka-storage.bat</code> 命令生成一个：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\bin\windows\kafka-storage.bat random-uuid</span><br></pre></td></tr></table></figure>
+<p>这个命令会输出一个 UUID，例如 <code>E9ZpZQp9R1q_zX9yY3zA7w</code>。<strong>复制并记下这个 ID</strong>。</p>
+</li>
+<li>
+<p><strong>格式化日志目录:</strong><br>
+使用上一步生成的集群 ID 和你的 <code>server.properties</code> 文件来格式化在 <code>log.dirs</code> 中指定的目录。</p>
+<ul>
+<li>将 <code>&lt;你的集群ID&gt;</code> 替换为你刚刚生成的那个 UUID。</li>
+<li>确保 <code>-c .\config\server.properties</code> 指向你正在使用的配置文件。</li>
+<li>单机启动确保添加–standalone 参数</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\bin\windows\kafka-storage.bat format -t &lt;你的集群ID&gt; -c .\config\server.properties --standalone</span><br></pre></td></tr></table></figure>
+<p>例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\bin\windows\kafka-storage.bat format -t E9ZpZQp9R1q_zX9yY3zA7w -c .\config\server.properties --standalone</span><br></pre></td></tr></table></figure>
+<p>这个命令会读取 <code>server.properties</code> 文件中的 <code>log.dirs</code> 配置，并在该目录下创建必要的元数据文件，包括 <code>meta.properties</code>。</p>
+</li>
+<li>
+<p><strong>重新启动 Kafka 服务器:</strong><br>
+现在日志目录已经格式化好了，再次尝试启动 Kafka 服务器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\bin\windows\kafka-server-start.bat .\config\server.properties</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><strong>总结:</strong></p>
+<p>Kafka 4.0 强制使用 KRaft 模式，启动前必须先格式化日志存储目录。你需要：</p>
+<ol>
+<li>检查 <code>server.properties</code> 文件中的 KRaft 配置。</li>
+<li>生成一个 Cluster ID。</li>
+<li>使用 <code>kafka-storage.bat format</code> 命令和生成的 Cluster ID 及配置文件来格式化日志目录。</li>
+<li>再次运行 <code>kafka-server-start.bat</code>。</li>
+</ol>
+<h2 id="🧪-java示例：">🧪 java示例：</h2>
+<h3 id="1-引入相关依赖-build-gradle-kts">1.引入相关依赖(build.gradle.kts)</h3>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line">	java</span><br><span class="line">	id(<span class="string">&quot;org.springframework.boot&quot;</span>) version <span class="string">&quot;3.4.5&quot;</span></span><br><span class="line">	id(<span class="string">&quot;io.spring.dependency-management&quot;</span>) version <span class="string">&quot;1.1.7&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">java &#123;</span><br><span class="line">	toolchain &#123;</span><br><span class="line">		languageVersion = JavaLanguageVersion.of(<span class="number">17</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">	implementation(<span class="string">&quot;org.springframework.boot:spring-boot-starter-amqp&quot;</span>)</span><br><span class="line">	implementation(<span class="string">&quot;org.springframework.boot:spring-boot-starter-logging&quot;</span>)</span><br><span class="line">	testImplementation(<span class="string">&quot;org.springframework.boot:spring-boot-starter-test&quot;</span>)</span><br><span class="line">	testImplementation(<span class="string">&quot;org.springframework.amqp:spring-rabbit-test&quot;</span>)</span><br><span class="line">	testRuntimeOnly(<span class="string">&quot;org.junit.platform:junit-platform-launcher&quot;</span>)</span><br><span class="line">	implementation(platform(project(<span class="string">&quot;:dependencies-bom&quot;</span>)))</span><br><span class="line">	compileOnly(<span class="string">&quot;org.projectlombok:lombok&quot;</span>)</span><br><span class="line">	annotationProcessor(<span class="string">&quot;org.projectlombok:lombok&quot;</span>) <span class="comment">// 对于注解处理</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">tasks.withType&lt;Test&gt; &#123;</span><br><span class="line">	useJUnitPlatform()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="2-创建producer">2.创建producer</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.springgradlekafka;``</span><br><span class="line"><span class="keyword">import</span> org.apache.kafka.clients.producer.KafkaProducer;</span><br><span class="line"><span class="keyword">import</span> org.apache.kafka.clients.producer.ProducerRecord;</span><br><span class="line"><span class="keyword">import</span> java.util.Properties;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">KafkaProducerTest</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Properties</span> <span class="variable">props</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Properties</span>();</span><br><span class="line">        props.put(<span class="string">&quot;bootstrap.servers&quot;</span>,<span class="string">&quot;127.0.0.1:9092&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;ack&quot;</span>,<span class="string">&quot;all&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;key.serializer&quot;</span>, <span class="string">&quot;org.apache.kafka.common.serialization.StringSerializer&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;value.serializer&quot;</span>, <span class="string">&quot;org.apache.kafka.common.serialization.StringSerializer&quot;</span>);</span><br><span class="line">        KafkaProducer&lt;String, String&gt; kafkaProducer = <span class="keyword">new</span> <span class="title class_">KafkaProducer</span>&lt;&gt;(props);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">            <span class="type">ProducerRecord</span> <span class="variable">producerRecord</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ProducerRecord</span>&lt;&gt;(<span class="string">&quot;test&quot;</span>,<span class="string">&quot;myKey&quot;</span>+i,<span class="string">&quot;myVluew&quot;</span>+i);</span><br><span class="line">            kafkaProducer.send(producerRecord);</span><br><span class="line">        &#125;</span><br><span class="line">        kafkaProducer.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-创建Consumer">3.创建Consumer</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.springgradlekafka;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.kafka.clients.consumer.ConsumerConfig;</span><br><span class="line"><span class="keyword">import</span> org.apache.kafka.clients.consumer.ConsumerRecord;</span><br><span class="line"><span class="keyword">import</span> org.apache.kafka.clients.consumer.ConsumerRecords;</span><br><span class="line"><span class="keyword">import</span> org.apache.kafka.clients.consumer.KafkaConsumer;</span><br><span class="line"><span class="keyword">import</span> org.apache.kafka.clients.producer.KafkaProducer;</span><br><span class="line"><span class="keyword">import</span> org.apache.kafka.clients.producer.ProducerRecord;</span><br><span class="line"><span class="keyword">import</span> org.apache.kafka.common.PartitionInfo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.time.Duration;</span><br><span class="line"><span class="keyword">import</span> java.util.Collections;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.Properties;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">KafkaConsumerTest</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Properties</span> <span class="variable">props</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Properties</span>();</span><br><span class="line">        props.put(<span class="string">&quot;bootstrap.servers&quot;</span>,<span class="string">&quot;127.0.0.1:9092&quot;</span>);</span><br><span class="line"><span class="comment">//        props.put(&quot;ack&quot;,&quot;all&quot;);</span></span><br><span class="line"><span class="comment">//        props.put(&quot;key.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span></span><br><span class="line"><span class="comment">//        props.put(&quot;value.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span></span><br><span class="line">        props.put(<span class="string">&quot;key.deserializer&quot;</span>, <span class="string">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;value.deserializer&quot;</span>, <span class="string">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span>);</span><br><span class="line">        props.put(ConsumerConfig.GROUP_ID_CONFIG,<span class="string">&quot;group_wpx&quot;</span>);</span><br><span class="line">        KafkaConsumer&lt;String, String&gt; consumer = <span class="keyword">new</span> <span class="title class_">KafkaConsumer</span>&lt;String, String&gt;(props);</span><br><span class="line">        consumer.subscribe(Collections.singletonList(<span class="string">&quot;test&quot;</span>));</span><br><span class="line"><span class="comment">//        Map&lt;String, List&lt;PartitionInfo&gt;&gt; stringListMap = stringStringKafkaConsumer.listTopics();</span></span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            ConsumerRecords&lt;String, String&gt; records = consumer.poll(Duration.ofSeconds(<span class="number">1</span>));</span><br><span class="line">            <span class="keyword">for</span> (ConsumerRecord&lt;String, String&gt; record : records) &#123;</span><br><span class="line">                System.out.printf(<span class="string">&quot;offset = %d, key = %s, value = %s%n&quot;</span>,</span><br><span class="line">                        record.offset(), record.key(), record.value());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="创建信息如下">创建信息如下:</h3>
+<img src="C:\wangpx\SSSS\blog\source\_posts\Kafka-4-x.assets\image-20250427102238197.png" alt="image-20250427102238197" style="zoom:80%;" />
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://wang125631.github.io">王鹏霄</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://wang125631.github.io/2025/04/27/Kafka-4-x/">https://wang125631.github.io/2025/04/27/Kafka-4-x/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://wang125631.github.io" target="_blank">java往事</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Kafka/">Kafka</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/04/18/LeetCode-198%EF%BC%9A%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/" title="LeetCode 198：打家劫舍"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">LeetCode 198：打家劫舍</div></div><div class="info-2"><div class="info-item-1">LeetCode 198 题「打家劫舍」（House Robber）是一道经典的动态规划问题，题意如下：  🧾 题目描述： 你是一个专业的小偷，计划偷窃沿街的一排房屋。每间房内都有一定的现金，如果两间相邻的房屋在同一晚上被偷，会触发报警系统。 给定一个非负整数数组 nums，表示每间房屋存放的现金，求在不触动报警系统的情况下一夜之内最多可以偷窃的金额。  🧠 解题思路（动态规划）： 定义状态：  dp[i] 表示前 i 间房屋最多能偷窃的金额。  状态转移方程：  偷第 i 间房：dp[i-2] + nums[i] 不偷第 i 间房：dp[i-1] 所以： dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])  初始条件：  dp[0] = nums[0] dp[1] = max(nums[0], nums[1])   ✅ Java 示例代码： 1234567891011121314151617 public class Solution &#123;    public int rob(int[] nums) &#123;       ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">王鹏霄</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%A0-Kafka-%E4%BD%BF%E7%94%A8-KRaft-vs-%E4%BD%BF%E7%94%A8-ZooKeeper-%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%80%E8%A7%88"><span class="toc-number">1.</span> <span class="toc-text">🧠 Kafka 使用 KRaft vs 使用 ZooKeeper 的区别一览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%8C-%E4%BB%80%E4%B9%88%E6%98%AF-KRaft%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">📌 什么是 KRaft？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%9A%80-Kafka-4-x-%E4%BB%A5%E5%90%8E%E5%B0%B1%E5%8F%AA%E8%83%BD%E4%BD%BF%E7%94%A8-KRaft%EF%BC%81"><span class="toc-number">3.</span> <span class="toc-text">🚀 Kafka 4.x 以后就只能使用 KRaft！</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%91%80-%E6%80%BB%E7%BB%93%E4%B8%80%E5%8F%A5%E8%AF%9D%EF%BC%9A"><span class="toc-number">3.1.</span> <span class="toc-text">👀 总结一句话：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%9A%80Kafka-4-x-%E5%90%AF%E5%8A%A8%E4%B9%8B%E5%89%8D%E9%9C%80%E6%89%A7%E8%A1%8C%E4%B8%80%E4%B8%AA%E9%A2%9D%E5%A4%96%E7%9A%84%E6%AD%A5%E9%AA%A4%E6%9D%A5%E6%A0%BC%E5%BC%8F%E5%8C%96%E6%97%A5%E5%BF%97%E7%9B%AE%E5%BD%95"><span class="toc-number">4.</span> <span class="toc-text">🚀Kafka 4.x 启动之前需执行一个额外的步骤来格式化日志目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%AA-java%E7%A4%BA%E4%BE%8B%EF%BC%9A"><span class="toc-number">5.</span> <span class="toc-text">🧪 java示例：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%BC%95%E5%85%A5%E7%9B%B8%E5%85%B3%E4%BE%9D%E8%B5%96-build-gradle-kts"><span class="toc-number">5.1.</span> <span class="toc-text">1.引入相关依赖(build.gradle.kts)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%88%9B%E5%BB%BAproducer"><span class="toc-number">5.2.</span> <span class="toc-text">2.创建producer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%88%9B%E5%BB%BAConsumer"><span class="toc-number">5.3.</span> <span class="toc-text">3.创建Consumer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E4%BF%A1%E6%81%AF%E5%A6%82%E4%B8%8B"><span class="toc-number">5.4.</span> <span class="toc-text">创建信息如下:</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/27/Kafka-4-x/" title="Kafka 4.x">Kafka 4.x</a><time datetime="2025-04-27T02:00:48.000Z" title="发表于 2025-04-27 10:00:48">2025-04-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/18/LeetCode-198%EF%BC%9A%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/" title="LeetCode 198：打家劫舍">LeetCode 198：打家劫舍</a><time datetime="2025-04-18T07:33:42.000Z" title="发表于 2025-04-18 15:33:42">2025-04-18</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By 王鹏霄</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
