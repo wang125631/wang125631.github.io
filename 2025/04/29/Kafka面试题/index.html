@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Kafka面试题 | java往事</title><meta name="author" content="王鹏霄"><meta name="copyright" content="王鹏霄"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="问题1：你能解释一下 Kafka 中消费者的“位移（offset）提交机制”吗？有哪些提交方式？各自的优缺点是什么？（可以结合 enable.auto.commit、commitSync()、commitAsync()、消费失败重试等方面谈谈） Kafka 中消费者的 Offset 提交机制 是用于记录消费者当前消费进度的重要机制，能够有效防止消息的重复消费或丢失。主要有以下几种方式： 1. 自动">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka面试题">
+<meta property="og:url" content="https://wang125631.github.io/2025/04/29/Kafka%E9%9D%A2%E8%AF%95%E9%A2%98/index.html">
+<meta property="og:site_name" content="java往事">
+<meta property="og:description" content="问题1：你能解释一下 Kafka 中消费者的“位移（offset）提交机制”吗？有哪些提交方式？各自的优缺点是什么？（可以结合 enable.auto.commit、commitSync()、commitAsync()、消费失败重试等方面谈谈） Kafka 中消费者的 Offset 提交机制 是用于记录消费者当前消费进度的重要机制，能够有效防止消息的重复消费或丢失。主要有以下几种方式： 1. 自动">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wang125631.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2025-04-29T03:41:20.000Z">
+<meta property="article:modified_time" content="2025-04-29T03:42:15.473Z">
+<meta property="article:author" content="王鹏霄">
+<meta property="article:tag" content="Kafka 面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wang125631.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Kafka面试题",
+  "url": "https://wang125631.github.io/2025/04/29/Kafka%E9%9D%A2%E8%AF%95%E9%A2%98/",
+  "image": "https://wang125631.github.io/img/butterfly-icon.png",
+  "datePublished": "2025-04-29T03:41:20.000Z",
+  "dateModified": "2025-04-29T03:42:15.473Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "王鹏霄",
+      "url": "https://wang125631.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wang125631.github.io/2025/04/29/Kafka%E9%9D%A2%E8%AF%95%E9%A2%98/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Kafka面试题',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">java往事</span></a><a class="nav-page-title" href="/"><span class="site-name">Kafka面试题</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Kafka面试题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-29T03:41:20.000Z" title="发表于 2025-04-29 11:41:20">2025-04-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-29T03:42:15.473Z" title="更新于 2025-04-29 11:42:15">2025-04-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/">中间件</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="问题1：你能解释一下-Kafka-中消费者的“位移（offset）提交机制”吗？有哪些提交方式？各自的优缺点是什么？"><a href="#问题1：你能解释一下-Kafka-中消费者的“位移（offset）提交机制”吗？有哪些提交方式？各自的优缺点是什么？" class="headerlink" title="问题1：你能解释一下 Kafka 中消费者的“位移（offset）提交机制”吗？有哪些提交方式？各自的优缺点是什么？"></a><strong>问题1：你能解释一下 Kafka 中消费者的“位移（offset）提交机制”吗？有哪些提交方式？各自的优缺点是什么？</strong></h1><p>（可以结合 <code>enable.auto.commit</code>、<code>commitSync()</code>、<code>commitAsync()</code>、消费失败重试等方面谈谈）</p>
+<p>Kafka 中消费者的 <strong>Offset 提交机制</strong> 是用于记录消费者当前消费进度的重要机制，能够有效防止消息的重复消费或丢失。主要有以下几种方式：</p>
+<h3 id="1-自动提交（enable-auto-commit-true）"><a href="#1-自动提交（enable-auto-commit-true）" class="headerlink" title="1. 自动提交（enable.auto.commit=true）"></a>1. 自动提交（<code>enable.auto.commit=true</code>）</h3><ul>
+<li>Kafka 会根据配置的 <code>auto.commit.interval.ms</code>（默认 5 秒）自动定期提交最新消费到的 offset。</li>
+<li><strong>优点</strong>：<ul>
+<li>实现简单，减少代码复杂度。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：<ul>
+<li>在提交间隔内如果应用崩溃，会导致重复消费。</li>
+<li>消息处理失败也可能被提交，无法精细控制。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="2-手动同步提交（consumer-commitSync-）"><a href="#2-手动同步提交（consumer-commitSync-）" class="headerlink" title="2. 手动同步提交（consumer.commitSync()）"></a>2. 手动同步提交（<code>consumer.commitSync()</code>）</h3><ul>
+<li>开发者在逻辑处理完成后，手动调用 <code>commitSync()</code> 来提交 offset。</li>
+<li><strong>优点</strong>：<ul>
+<li>安全性高，可以确保消息处理成功后才提交 offset。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：<ul>
+<li>每次提交会阻塞线程等待 Kafka 响应，性能相对较低。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-手动异步提交（consumer-commitAsync-）"><a href="#3-手动异步提交（consumer-commitAsync-）" class="headerlink" title="3. 手动异步提交（consumer.commitAsync()）"></a>3. 手动异步提交（<code>consumer.commitAsync()</code>）</h3><ul>
+<li>不阻塞主线程，异步将 offset 提交给 Kafka。</li>
+<li><strong>优点</strong>：<ul>
+<li>性能更高，效率好，适合对吞吐量要求高的场景。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：<ul>
+<li>如果提交失败不会自动重试，需要额外处理回调中的异常（如日志记录、补偿机制等），否则可能造成 offset 丢失。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="补充建议："><a href="#补充建议：" class="headerlink" title="补充建议："></a>补充建议：</h3><ul>
+<li>实际开发中，常用的策略是：<ul>
+<li>使用手动提交；</li>
+<li>先处理业务逻辑，确保处理成功后再提交；</li>
+<li>可组合使用同步和异步，比如异步为主，同步做关键节点确认；</li>
+<li>配合重试机制（如死信队列、消息补偿等）增强健壮性</li>
+</ul>
+</li>
+</ul>
+<h1 id="问题2-Kafka-是如何实现高吞吐和高可用的？请结合分区（Partition）、副本（Replica）和-ISR（In-Sync-Replica）机制来说明。"><a href="#问题2-Kafka-是如何实现高吞吐和高可用的？请结合分区（Partition）、副本（Replica）和-ISR（In-Sync-Replica）机制来说明。" class="headerlink" title="问题2 : Kafka 是如何实现高吞吐和高可用的？请结合分区（Partition）、副本（Replica）和 ISR（In-Sync Replica）机制来说明。"></a>问题2 : Kafka 是如何实现高吞吐和高可用的？请结合分区（Partition）、副本（Replica）和 ISR（In-Sync Replica）机制来说明。</h1><ul>
+<li>Kafka 利用 <em>partition</em> 实现横向扩展（scale out），提升了并发处理能力，是其高吞吐的基础。</li>
+<li>高可用性依赖于 <em>replication</em> 副本机制，Kafka 默认支持异步复制，但通过 ISR 集合保障了数据一致性。</li>
+<li><em>ISR（In-Sync Replica）机制</em> 确保消息被安全复制到多个副本后才确认，配合 <code>acks=all</code>，可实现“至少一次”或“精确一次”语义。</li>
+<li>Leader 失效后，Kafka 通过 <em>Zookeeper</em>（或 Kraft 模式下的 <em>Raft 机制</em>）快速完成 Leader 重选，确保服务不中断。</li>
+</ul>
+<h1 id="问题3-在分布式系统中，如何保证消息队列中的消息不被重复消费？Kafka-是怎么做的？如果你来设计，还能怎么优化？"><a href="#问题3-在分布式系统中，如何保证消息队列中的消息不被重复消费？Kafka-是怎么做的？如果你来设计，还能怎么优化？" class="headerlink" title="问题3: 在分布式系统中，如何保证消息队列中的消息不被重复消费？Kafka 是怎么做的？如果你来设计，还能怎么优化？"></a>问题3: 在分布式系统中，如何保证消息队列中的消息不被重复消费？Kafka 是怎么做的？如果你来设计，还能怎么优化？</h1><ul>
+<li>✅ 提到了 Kafka 的 <strong>offset 提交机制</strong> 和三种提交方式（自动、同步、异步）的区别，这个是基本盘，解释得清楚。</li>
+<li>✅ 说到了 Kafka 的 <strong>幂等性 producer</strong>（Producer ID + Sequence Number 实现）👍。</li>
+<li>✅ 明确指出了 Kafka 原生 <strong>不支持 consumer 幂等性</strong>，需要业务端设计来保障 —— 非常关键的认知。</li>
+<li>✅ 引申了 <strong>事务性处理</strong>（Kafka 的 Exactly-Once 语义），用来保障 “读 → 处理 → 写” 的原子性。</li>
+<li>✅ 设计思路里提到通过 <strong>WAL（预写日志）+ 快照机制</strong> 做消费日志持久化、用业务唯一 ID 做幂等判断，这体现了你对实际系统设计的理解和经验感 👏。</li>
+</ul>
+<hr>
+<p>🎯 <strong>优化建议（加分项）可以考虑补充：</strong></p>
+<ol>
+<li><strong>幂等消费的实现方式举例：</strong><ul>
+<li>数据库端使用唯一索引（如 <code>order_id</code>）确保消息只处理一次；</li>
+<li>或者 Redis 中维护一个 <code>消费过的消息 ID 集合</code>，避免重复。</li>
+</ul>
+</li>
+<li><strong>Kafka 的事务性注意点：</strong><ul>
+<li>Kafka 的事务保证的是“<strong>写入多个 partition 的原子性</strong>”，但对外部系统（如 DB）并不保证；</li>
+<li>事务 API 只能配合幂等 producer 使用，而且要严格使用 begin → send → commit 的结构。</li>
+</ul>
+</li>
+</ol>
+<h1 id="问题4-请解释-Kafka-中消费者组的-Rebalance（重平衡）-机制是什么？它会在什么情况下触发？对业务会有什么影响？我们该如何优化或控制-Rebalance-带来的影响？"><a href="#问题4-请解释-Kafka-中消费者组的-Rebalance（重平衡）-机制是什么？它会在什么情况下触发？对业务会有什么影响？我们该如何优化或控制-Rebalance-带来的影响？" class="headerlink" title="问题4: 请解释 Kafka 中消费者组的 Rebalance（重平衡） 机制是什么？它会在什么情况下触发？对业务会有什么影响？我们该如何优化或控制 Rebalance 带来的影响？"></a>问题4: 请解释 Kafka 中消费者组的 <strong>Rebalance（重平衡）</strong> 机制是什么？它会在什么情况下触发？对业务会有什么影响？我们该如何优化或控制 Rebalance 带来的影响？</h1><p>Kafka 中的消费者组 Rebalance 是实现负载均衡的重要机制。其主要目的是确保消费者组中的每个消费者能合理分担 Topic 的多个分区。</p>
+<p><strong>触发时机</strong>包括：</p>
+<ul>
+<li>消费者加入或离开消费者组（如宕机、扩缩容）</li>
+<li>订阅的 Topic 或分区发生变化</li>
+<li>消费者长时间未发送心跳，被 Kafka 判定为离线</li>
+</ul>
+<p><strong>影响</strong>：Rebalance 期间会暂停消费、重新分配分区，导致短暂的不可用或状态丢失。</p>
+<p><strong>优化策略</strong>：</p>
+<ul>
+<li>使用 <code>StickyAssignor</code> 或 <code>CooperativeStickyAssignor</code> 减少 Rebalance 频率</li>
+<li>合理设置 <code>session.timeout.ms</code> 和 <code>max.poll.interval.ms</code></li>
+<li>避免消费者阻塞或 poll 超时</li>
+<li>在业务层使用唯一 key 去重，配合事务控制避免重复处理</li>
+<li>注册 <code>ConsumerRebalanceListener</code> 在重平衡前后做好资源的回收与初始化</li>
+</ul>
+<h1 id="问题5：Kafka-中-ISR-是什么？它的作用是什么？什么时候会出现不在-ISR-中的副本？你怎么理解-leader-选举过程？"><a href="#问题5：Kafka-中-ISR-是什么？它的作用是什么？什么时候会出现不在-ISR-中的副本？你怎么理解-leader-选举过程？" class="headerlink" title="问题5：Kafka 中 ISR 是什么？它的作用是什么？什么时候会出现不在 ISR 中的副本？你怎么理解 leader 选举过程？"></a>问题5：Kafka 中 ISR 是什么？它的作用是什么？什么时候会出现不在 ISR 中的副本？你怎么理解 leader 选举过程？</h1><h3 id="Kafka-中的-ISR-与故障转移机制"><a href="#Kafka-中的-ISR-与故障转移机制" class="headerlink" title="Kafka 中的 ISR 与故障转移机制"></a>Kafka 中的 ISR 与故障转移机制</h3><ol>
+<li><strong>ISR（In-Sync Replicas）的定义与作用</strong><br> ISR 是与当前 Partition 的 Leader 副本保持同步的一组 Follower 副本集合。它的核心作用是在 Leader 发生故障时，确保消息不会丢失或被重复消费。Kafka 默认仅从 ISR 集合中选举新的 Leader，保证数据一致性。</li>
+<li><strong>acks&#x3D;all 与 ISR 的关系</strong><br> 当生产者配置 <code>acks=all</code> 时，消息只有在 ISR 集合中所有副本都成功写入后，Kafka 才会向生产者返回 ACK。这是一种最高级别的可靠性保障策略。</li>
+<li><strong>Controller 的选举与作用</strong><br> Kafka 集群中的一个 Broker 会被选为 Controller，负责管理 Partition 的 Leader 选举、Topic 元数据等。Controller 的选举原理类似分布式锁机制（旧版本使用 Zookeeper，3.x 起支持自研的 KRaft 模式）。</li>
+<li><strong>故障转移流程</strong><ul>
+<li>Leader 所在 Broker 宕机后，Zookeeper（或 KRaft Controller）会感知到该节点失联。</li>
+<li>Controller 触发 Leader 重选流程，并优先从 ISR 集合中选择一个 Follower 副本作为新的 Leader，保证数据的完整性和可靠性。</li>
+<li>如果 ISR 不存在可选副本，也可以根据配置决定是否允许从非 ISR 中选 Leader（牺牲一致性换可用性）。</li>
+</ul>
+</li>
+<li><strong>优化建议</strong><ul>
+<li>保持 ISR 稳定可以提高 Kafka 的可靠性。</li>
+<li>设置合理的 <code>replica.lag.time.max.ms</code> 和 <code>replica.lag.max.messages</code> 控制 ISR 副本的容忍程度。</li>
+<li>合理设置 <code>acks</code> 和 <code>min.insync.replicas</code> 保障数据可靠性。</li>
+</ul>
+</li>
+</ol>
+<h1 id="问题6-Kafka-中如何实现消息的顺序消费？在什么场景下消息顺序可能被打乱？如何保证顺序？"><a href="#问题6-Kafka-中如何实现消息的顺序消费？在什么场景下消息顺序可能被打乱？如何保证顺序？" class="headerlink" title="问题6: Kafka 中如何实现消息的顺序消费？在什么场景下消息顺序可能被打乱？如何保证顺序？"></a>问题6: Kafka 中如何实现消息的顺序消费？在什么场景下消息顺序可能被打乱？如何保证顺序？</h1><p>Kafka 中消息的顺序性是<strong>分区级别</strong>保证的，即<strong>每个分区内的消息是有序的</strong>，但<strong>全局（整个 Topic）不保证有序</strong>。</p>
+<h4 id="✅-如何实现顺序消费："><a href="#✅-如何实现顺序消费：" class="headerlink" title="✅ 如何实现顺序消费："></a>✅ 如何实现顺序消费：</h4><ol>
+<li><strong>使用相同的分区键（key）</strong>：发送消息时指定相同的 key，使其落到同一个分区中，保证这个 key 相关的消息顺序一致。</li>
+<li><strong>消费者顺序处理</strong>：确保一个分区只有一个线程消费，或者消费后再交由有序队列处理。</li>
+</ol>
+<h4 id="⚠️-顺序可能被打乱的场景："><a href="#⚠️-顺序可能被打乱的场景：" class="headerlink" title="⚠️ 顺序可能被打乱的场景："></a>⚠️ 顺序可能被打乱的场景：</h4><ul>
+<li>使用多个分区发送消息时，消息会根据 hash 分配到不同分区，导致整体顺序无法保证。</li>
+<li>消费者组发生 rebalance 时，分区可能重新分配，打乱原来的顺序。</li>
+<li>同一分区内使用多线程异步处理消息，处理顺序可能不同于消费顺序。</li>
+<li>异常恢复场景下，如未提交 offset 重复消费，处理结果可能不一致。</li>
+</ul>
+<h4 id="🛠️-如何加强顺序保障："><a href="#🛠️-如何加强顺序保障：" class="headerlink" title="🛠️ 如何加强顺序保障："></a>🛠️ 如何加强顺序保障：</h4><ul>
+<li><strong>严格顺序</strong>：一个 Topic 只用一个分区，但吞吐能力有限。</li>
+<li><strong>局部顺序</strong>：对某个业务 key 使用一致的 key 策略路由到固定分区，是最常见的做法。</li>
+<li><strong>业务层幂等或去重</strong>：配合 offset 记录、业务唯一 ID、幂等处理来增强顺序和一致性。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://wang125631.github.io">王鹏霄</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://wang125631.github.io/2025/04/29/Kafka%E9%9D%A2%E8%AF%95%E9%A2%98/">https://wang125631.github.io/2025/04/29/Kafka%E9%9D%A2%E8%AF%95%E9%A2%98/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://wang125631.github.io" target="_blank">java往事</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Kafka-%E9%9D%A2%E8%AF%95/">Kafka 面试</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/04/27/Kafka-4-x/" title="Kafka 4.x"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Kafka 4.x</div></div><div class="info-2"><div class="info-item-1">在 Kafka 4.x 版本中，Kafka 不再支持 ZooKeeper 模式，只支持新的 KRaft 模式。不过为了理解它们的区别，我们可以对比一下 Kafka 4 之前的两种架构：KRaft 模式 vs ZooKeeper 模式，也就是：  🧠 Kafka 使用 KRaft vs 使用 ZooKeeper 的区别一览    对比项 ZooKeeper 模式（Kafka ≤ 3.x） KRaft 模式（Kafka ≥ 2.8，Kafka 4.x 默认）     ✅ 是否需要 ZooKeeper 需要 不需要   🏗️ 架构组件 Kafka Broker + ZooKeeper Kafka Broker 本身就做元数据管理   📊 元数据管理 存储在 ZooKeeper 中（集群元数据、Controller 选举等） 使用 Kafka 自己的内部元数据日志存储（Raft 协议）   🧱 控制器选举 由 ZooKeeper 选出 Controller Broker Kafka 内部基于 Raft 自动选主   📦 集群部署复杂度 较高，需要维护 ZooKeeper...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">王鹏霄</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%981%EF%BC%9A%E4%BD%A0%E8%83%BD%E8%A7%A3%E9%87%8A%E4%B8%80%E4%B8%8B-Kafka-%E4%B8%AD%E6%B6%88%E8%B4%B9%E8%80%85%E7%9A%84%E2%80%9C%E4%BD%8D%E7%A7%BB%EF%BC%88offset%EF%BC%89%E6%8F%90%E4%BA%A4%E6%9C%BA%E5%88%B6%E2%80%9D%E5%90%97%EF%BC%9F%E6%9C%89%E5%93%AA%E4%BA%9B%E6%8F%90%E4%BA%A4%E6%96%B9%E5%BC%8F%EF%BC%9F%E5%90%84%E8%87%AA%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">问题1：你能解释一下 Kafka 中消费者的“位移（offset）提交机制”吗？有哪些提交方式？各自的优缺点是什么？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%87%AA%E5%8A%A8%E6%8F%90%E4%BA%A4%EF%BC%88enable-auto-commit-true%EF%BC%89"><span class="toc-number">1.0.1.</span> <span class="toc-text">1. 自动提交（enable.auto.commit&#x3D;true）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%89%8B%E5%8A%A8%E5%90%8C%E6%AD%A5%E6%8F%90%E4%BA%A4%EF%BC%88consumer-commitSync-%EF%BC%89"><span class="toc-number">1.0.2.</span> <span class="toc-text">2. 手动同步提交（consumer.commitSync()）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%89%8B%E5%8A%A8%E5%BC%82%E6%AD%A5%E6%8F%90%E4%BA%A4%EF%BC%88consumer-commitAsync-%EF%BC%89"><span class="toc-number">1.0.3.</span> <span class="toc-text">3. 手动异步提交（consumer.commitAsync()）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%E5%BB%BA%E8%AE%AE%EF%BC%9A"><span class="toc-number">1.0.4.</span> <span class="toc-text">补充建议：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%982-Kafka-%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%90%9E%E5%90%90%E5%92%8C%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84%EF%BC%9F%E8%AF%B7%E7%BB%93%E5%90%88%E5%88%86%E5%8C%BA%EF%BC%88Partition%EF%BC%89%E3%80%81%E5%89%AF%E6%9C%AC%EF%BC%88Replica%EF%BC%89%E5%92%8C-ISR%EF%BC%88In-Sync-Replica%EF%BC%89%E6%9C%BA%E5%88%B6%E6%9D%A5%E8%AF%B4%E6%98%8E%E3%80%82"><span class="toc-number">2.</span> <span class="toc-text">问题2 : Kafka 是如何实现高吞吐和高可用的？请结合分区（Partition）、副本（Replica）和 ISR（In-Sync Replica）机制来说明。</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%983-%E5%9C%A8%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B8%AD%EF%BC%8C%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B8%AD%E7%9A%84%E6%B6%88%E6%81%AF%E4%B8%8D%E8%A2%AB%E9%87%8D%E5%A4%8D%E6%B6%88%E8%B4%B9%EF%BC%9FKafka-%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E7%9A%84%EF%BC%9F%E5%A6%82%E6%9E%9C%E4%BD%A0%E6%9D%A5%E8%AE%BE%E8%AE%A1%EF%BC%8C%E8%BF%98%E8%83%BD%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96%EF%BC%9F"><span class="toc-number">3.</span> <span class="toc-text">问题3: 在分布式系统中，如何保证消息队列中的消息不被重复消费？Kafka 是怎么做的？如果你来设计，还能怎么优化？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%984-%E8%AF%B7%E8%A7%A3%E9%87%8A-Kafka-%E4%B8%AD%E6%B6%88%E8%B4%B9%E8%80%85%E7%BB%84%E7%9A%84-Rebalance%EF%BC%88%E9%87%8D%E5%B9%B3%E8%A1%A1%EF%BC%89-%E6%9C%BA%E5%88%B6%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E5%AE%83%E4%BC%9A%E5%9C%A8%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E8%A7%A6%E5%8F%91%EF%BC%9F%E5%AF%B9%E4%B8%9A%E5%8A%A1%E4%BC%9A%E6%9C%89%E4%BB%80%E4%B9%88%E5%BD%B1%E5%93%8D%EF%BC%9F%E6%88%91%E4%BB%AC%E8%AF%A5%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E6%88%96%E6%8E%A7%E5%88%B6-Rebalance-%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%BD%B1%E5%93%8D%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">问题4: 请解释 Kafka 中消费者组的 Rebalance（重平衡） 机制是什么？它会在什么情况下触发？对业务会有什么影响？我们该如何优化或控制 Rebalance 带来的影响？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%985%EF%BC%9AKafka-%E4%B8%AD-ISR-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E5%AE%83%E7%9A%84%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%BC%9A%E5%87%BA%E7%8E%B0%E4%B8%8D%E5%9C%A8-ISR-%E4%B8%AD%E7%9A%84%E5%89%AF%E6%9C%AC%EF%BC%9F%E4%BD%A0%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3-leader-%E9%80%89%E4%B8%BE%E8%BF%87%E7%A8%8B%EF%BC%9F"><span class="toc-number">5.</span> <span class="toc-text">问题5：Kafka 中 ISR 是什么？它的作用是什么？什么时候会出现不在 ISR 中的副本？你怎么理解 leader 选举过程？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Kafka-%E4%B8%AD%E7%9A%84-ISR-%E4%B8%8E%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB%E6%9C%BA%E5%88%B6"><span class="toc-number">5.0.1.</span> <span class="toc-text">Kafka 中的 ISR 与故障转移机制</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%986-Kafka-%E4%B8%AD%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%B6%88%E6%81%AF%E7%9A%84%E9%A1%BA%E5%BA%8F%E6%B6%88%E8%B4%B9%EF%BC%9F%E5%9C%A8%E4%BB%80%E4%B9%88%E5%9C%BA%E6%99%AF%E4%B8%8B%E6%B6%88%E6%81%AF%E9%A1%BA%E5%BA%8F%E5%8F%AF%E8%83%BD%E8%A2%AB%E6%89%93%E4%B9%B1%EF%BC%9F%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E9%A1%BA%E5%BA%8F%EF%BC%9F"><span class="toc-number">6.</span> <span class="toc-text">问题6: Kafka 中如何实现消息的顺序消费？在什么场景下消息顺序可能被打乱？如何保证顺序？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%9C%85-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%BA%E5%BA%8F%E6%B6%88%E8%B4%B9%EF%BC%9A"><span class="toc-number">6.0.0.1.</span> <span class="toc-text">✅ 如何实现顺序消费：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%9A%A0%EF%B8%8F-%E9%A1%BA%E5%BA%8F%E5%8F%AF%E8%83%BD%E8%A2%AB%E6%89%93%E4%B9%B1%E7%9A%84%E5%9C%BA%E6%99%AF%EF%BC%9A"><span class="toc-number">6.0.0.2.</span> <span class="toc-text">⚠️ 顺序可能被打乱的场景：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%9B%A0%EF%B8%8F-%E5%A6%82%E4%BD%95%E5%8A%A0%E5%BC%BA%E9%A1%BA%E5%BA%8F%E4%BF%9D%E9%9A%9C%EF%BC%9A"><span class="toc-number">6.0.0.3.</span> <span class="toc-text">🛠️ 如何加强顺序保障：</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/29/Kafka%E9%9D%A2%E8%AF%95%E9%A2%98/" title="Kafka面试题">Kafka面试题</a><time datetime="2025-04-29T03:41:20.000Z" title="发表于 2025-04-29 11:41:20">2025-04-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/27/Kafka-4-x/" title="Kafka 4.x">Kafka 4.x</a><time datetime="2025-04-27T02:00:48.000Z" title="发表于 2025-04-27 10:00:48">2025-04-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/18/LeetCode-198%EF%BC%9A%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/" title="LeetCode 198：打家劫舍">LeetCode 198：打家劫舍</a><time datetime="2025-04-18T07:33:42.000Z" title="发表于 2025-04-18 15:33:42">2025-04-18</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By 王鹏霄</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
